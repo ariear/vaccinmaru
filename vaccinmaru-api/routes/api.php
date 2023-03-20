@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\VaccinationController;
+use App\Models\Society;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -16,6 +17,22 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
+Route::get('/v1/society', function (Request $request) {
+    if ($request->token) {
+        $society = Society::firstWhere('login_tokens', $request->token);
+
+        if ($society !== null) {
+            return response()->json([
+                'data' => $society
+            ], 200);
+        }
+    }
+
+    return response()->json([
+        'message' => 'Unauthorized user'
+    ], 401);
+});
 
 Route::post('/v1/auth/login', [AuthController::class,'login']);
 Route::post('/v1/auth/logout', [AuthController::class,'logout']);

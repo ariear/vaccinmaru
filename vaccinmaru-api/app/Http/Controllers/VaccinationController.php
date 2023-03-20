@@ -106,6 +106,40 @@ class VaccinationController extends Controller
             if ($society !== null) {
                 $vaccination = Vaccination::where('society_id', $society->id)->get();
 
+                if ($vaccination->count() == 0) {
+                    return response()->json([
+                        'message' => 'you havent been vaccinated at all'
+                    ], 422);
+                }
+
+                if ($vaccination->count() == 1) {
+                    return response()->json([
+                        'vaccinations' => [
+                            'first' => [
+                                'queue' => 1,
+                                'dose' => $vaccination[0]->dose,
+                                'vaccination_date' => $vaccination[0]->date,
+                                'spot' => [
+                                    'id' => $vaccination[0]->spot->id,
+                                    'name' => $vaccination[0]->spot->name,
+                                    'address' => $vaccination[0]->spot->address,
+                                    'serve' => $vaccination[0]->spot->serve,
+                                    'capacity' => $vaccination[0]->spot->capacity,
+                                    'regional' => $vaccination[0]->spot->regional
+                                ],
+                                'status' => 'done',
+                                'vaccine' => $vaccination[0]->vaccine,
+                                'vaccinator' => [
+                                    'id' => $vaccination[0]->medical->id ?? null,
+                                    'role' => $vaccination[0]->medical->role ?? null,
+                                    'name' => $vaccination[0]->medical->name ?? null
+                                ]
+                            ],
+                            'second' => null,
+                        ]
+                    ], 200);
+                }
+
                 return response()->json([
                     'vaccinations' => [
                         'first' => [
@@ -123,9 +157,9 @@ class VaccinationController extends Controller
                             'status' => 'done',
                             'vaccine' => $vaccination[0]->vaccine,
                             'vaccinator' => [
-                                'id' => $vaccination[0]->medical->id,
-                                'role' => $vaccination[0]->medical->role,
-                                'name' => $vaccination[0]->medical->name
+                                'id' => $vaccination[0]->medical->id ?? null,
+                                'role' => $vaccination[0]->medical->role ?? null,
+                                'name' => $vaccination[0]->medical->name ?? null
                             ]
                         ],
                         'second' => [
@@ -143,9 +177,9 @@ class VaccinationController extends Controller
                             'status' => 'done',
                             'vaccine' => $vaccination[1]->vaccine,
                             'vaccinator' => [
-                                'id' => $vaccination[1]->medical->id,
-                                'role' => $vaccination[1]->medical->role,
-                                'name' => $vaccination[1]->medical->name
+                                'id' => $vaccination[1]->medical->id ?? null,
+                                'role' => $vaccination[1]->medical->role ?? null,
+                                'name' => $vaccination[1]->medical->name ?? null
                             ]
                         ],
                     ]

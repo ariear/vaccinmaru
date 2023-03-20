@@ -16,6 +16,12 @@ class ConsultationController extends Controller
             if ($society !== null) {
                 $consultation = Consultation::firstWhere('society_id', $society->id);
 
+                if ($consultation == null) {
+                    return response()->json([
+                        'message' => 'Consultation Not Found'
+                    ], 404);
+                }
+
                 return response()->json([
                     'consultation' => [
                         'id' => $consultation->id,
