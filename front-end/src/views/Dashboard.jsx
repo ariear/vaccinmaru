@@ -9,37 +9,49 @@ export default function Dashboard() {
     const [doctorName, setDoctorName] = useState('')
 
     const [firstVaccinations, setFirstVaccination] = useState({})
-    const [isVaccinationNotFound, setIsVaccinationNotFound] = useState(false)
     const [secondVaccinations, setSecondVaccination] = useState({})
+    const [isVaccinationNotFound, setIsVaccinationNotFound] = useState(false)
+
+    const [loading, setLoading] = useState(true)
 
     const onGetConsultationsHandle = async () => {
         try {
             const fetch = await axios.get(`http://localhost:8000/api/v1/consultations?token=${localStorage.getItem('token')}`)
             if (fetch.status === 200) {
-                setDoctorName(fetch.data.consultation.doctor.name)
+
+                if (fetch.data.consultation.doctor === null) {
+                    setDoctorName('-')
+                }else {
+                    setDoctorName(fetch.data.consultation.doctor.name)
+                }
+
                 setConsultations(fetch.data.consultation)
             }
-            console.log(fetch.data.consultation);
         } catch (error) {
             if (error.response.status === 404) {
                 setIsConsultationsNotFound(true)
             }
-            console.log(error);
         }
     }
     const onGetVaccinationsHandle = async () => {
+        setLoading(true)
         try {
             const fetch = await axios.get(`http://localhost:8000/api/v1/vaccinations?token=${localStorage.getItem('token')}`)
             if (fetch.status === 200) {
                 console.log(fetch.data.vaccinations);
                 setFirstVaccination(fetch.data.vaccinations.first)
-                setSecondVaccination(fetch.data.vaccinations.second)
+                if (fetch.data.vaccinations.second === null) {
+                    setSecondVaccination(null)
+                }else {
+                    setSecondVaccination(fetch.data.vaccinations.second)
+                }
+                setLoading(false)
             }
         } catch (error) {
             if (error.response.status === 422) {
                 setIsVaccinationNotFound(true)
             }
-            console.log(error.response);
+            // console.log(error.response);
         }
     }
 
@@ -47,6 +59,12 @@ export default function Dashboard() {
         onGetConsultationsHandle()
         onGetVaccinationsHandle()
     }, [])
+
+    if (loading) {
+        return (
+            <p>Loading...</p>
+        )
+    }
 
     return (
         <main>
@@ -105,7 +123,7 @@ export default function Dashboard() {
                                     </tr>
                                     <tr>
                                         <th>Doctor Notes</th>
-                                        <td class="text-muted">{consultations.doctor_notes}</td>
+                                        <td class="text-muted">{consultations.doctor_notes == null ? '-' : consultations.doctor_notes}</td>
                                     </tr>
                                 </table>
                             </div>
@@ -139,14 +157,14 @@ export default function Dashboard() {
                                     <h5 class="mb-0">First Vaccination</h5>
                                 </div>
                                 <div class="card-body">
-                                    <a href="">+ Register vaccination</a>
+                                    <Link to='/spot-vaccination/first-vaccination'>+ Register vaccination</Link>
                                 </div>
                             </div>
                         </div>
                     }
 
                     {
-                        firstVaccinations.length !== 0 || !isVaccinationNotFound &&
+                        firstVaccinations.length !== 0 &&
                     <div class="col-md-4">
                         <div class="card card-default">
                             <div class="card-header border-0">
@@ -164,7 +182,7 @@ export default function Dashboard() {
                                     </tr>
                                     <tr>
                                         <th>Spot</th>
-                                        {/* <td class="text-muted">{firstVaccinations.spot.name}</td> */}
+                                        <td class="text-muted">{firstVaccinations.spot.name}</td>
                                     </tr>
                                     <tr>
                                         <th>Vaccine</th>
@@ -192,14 +210,14 @@ export default function Dashboard() {
                                     <h5 class="mb-0">Second Vaccination</h5>
                                 </div>
                                 <div class="card-body">
-                                    <a href="">+ Register vaccination</a>
+                                <Link to='/spot-vaccination/second-vaccination'>+ Register vaccination</Link>
                                 </div>
                             </div>
                         </div>
                     }
                     
                     {
-                        secondVaccinations !== null || !isVaccinationNotFound &&
+                        secondVaccinations !== null &&
                     <div class="col-md-4">
                         <div class="card card-default">
                             <div class="card-header border-0">
@@ -217,7 +235,7 @@ export default function Dashboard() {
                                     </tr>
                                     <tr>
                                         <th>Spot</th>
-                                        {/* <td class="text-muted">{firstVaccinations.spot.name}</td> */}
+                                        <td class="text-muted">{firstVaccinations.spot.name}</td>
                                     </tr>
                                     <tr>
                                         <th>Vaccine</th>

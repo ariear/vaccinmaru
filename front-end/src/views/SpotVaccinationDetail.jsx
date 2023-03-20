@@ -1,13 +1,56 @@
+import axios from "axios"
+import { useEffect, useState } from "react"
+import { useNavigate, useParams } from "react-router-dom"
+import moment from "moment/moment"
+
 export default function SpotVaccinationDetail() {
+    const [vaccinationDetail, setVaccinationDetail] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [dateVaccinate, setDateVaccinate] = useState(moment().format('YYYY-MM-DD'))
+
+    const navigate = useNavigate()
+    const { id } = useParams()
+    
+    const getVaccinationDetailHandle = async () => {
+        setLoading(true)
+        try {
+            const fetch = await axios.get(`http://localhost:8000/api/v1/spots/${id}?token=${localStorage.getItem('token')}`)
+            setVaccinationDetail(fetch.data.spot)
+            setLoading(false)
+        } catch (error) {
+            console.log(error.response);
+        }
+    }
+
+    const postVaccinationRegisterHandle = async () => {
+        try {
+            const fetch = await axios.post(`http://localhost:8000/api/v1/vaccinations?token=${localStorage.getItem('token')}`, { spot_id: id, date: dateVaccinate })
+            navigate('/dashboard')
+        } catch (error) {
+            console.log(error.response);
+        }
+    }
+
+    useEffect(() => {
+        getVaccinationDetailHandle()
+        console.log(dateVaccinate);
+    },[])
+
+    if (loading) {
+        return (
+            <p>Loading...</p>
+        )
+    }
+
     return (
         <main>
     <header class="jumbotron">
         <div class="container d-flex justify-content-between align-items-center">
             <div>
-                <h1 class="display-4">Napitupulu Hospital</h1>
-                <span class="text-muted">Jln. HOS. Cjokroaminoto (Pasirkaliki) No. 900, DKI Jakarta</span>
+                <h1 class="display-4">{vaccinationDetail.name}</h1>
+                <span class="text-muted">{vaccinationDetail.address}</span>
             </div>
-            <a href="" class="btn btn-primary">Register vaccination</a>
+            <button class="btn btn-primary" onClick={postVaccinationRegisterHandle} >Register vaccination</button>
         </div>
     </header>
 
@@ -17,7 +60,7 @@ export default function SpotVaccinationDetail() {
             <div class="col-md-3">
                 <div class="form-group">
                     <label for="vaccination-date">Select vaccination date</label>
-                    <input type="date" class="form-control" id="vaccination-date" />
+                    <input type="date" class="form-control" value={moment(dateVaccinate).format('YYYY-MM-DD')} onChange={(e) => setDateVaccinate(moment(e.target.value).format('YYYY-MM-DD'))} id="vaccination-date" />
                 </div>
             </div>
         </div>
@@ -35,18 +78,6 @@ export default function SpotVaccinationDetail() {
                             <div class="row">
                                 <div class="col-4 mb-4">
                                     <div class="slot filled"> #1 </div>
-                                </div>
-                                <div class="col-4 mb-4">
-                                    <div class="slot filled"> #2 </div>
-                                </div>
-                                <div class="col-4 mb-4">
-                                    <div class="slot filled"> #3 </div>
-                                </div>
-                                <div class="col-4 mb-4">
-                                    <div class="slot filled"> #4 </div>
-                                </div>
-                                <div class="col-4 mb-4">
-                                    <div class="slot filled"> #5 </div>
                                 </div>
                             </div>
                         </div>
@@ -66,18 +97,6 @@ export default function SpotVaccinationDetail() {
                                 <div class="col-4 mb-4">
                                     <div class="slot filled"> #6 </div>
                                 </div>
-                                <div class="col-4 mb-4">
-                                    <div class="slot filled"> #7 </div>
-                                </div>
-                                <div class="col-4 mb-4">
-                                    <div class="slot bg-primary text-white"> #8 </div>
-                                </div>
-                                <div class="col-4 mb-4">
-                                    <div class="slot"> #9 </div>
-                                </div>
-                                <div class="col-4 mb-4">
-                                    <div class="slot"> #10 </div>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -95,18 +114,6 @@ export default function SpotVaccinationDetail() {
                             <div class="row">
                                 <div class="col-4 mb-4">
                                     <div class="slot"> #11 </div>
-                                </div>
-                                <div class="col-4 mb-4">
-                                    <div class="slot"> #12 </div>
-                                </div>
-                                <div class="col-4 mb-4">
-                                    <div class="slot"> #13 </div>
-                                </div>
-                                <div class="col-4 mb-4">
-                                    <div class="slot"> #14 </div>
-                                </div>
-                                <div class="col-4 mb-4">
-                                    <div class="slot"> #15 </div>
                                 </div>
                             </div>
                         </div>

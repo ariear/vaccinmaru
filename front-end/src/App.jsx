@@ -49,8 +49,8 @@ function App() {
             <Route element={<Nav />} >
               <Route path="/consultation-request" element={<ConsultationRequest />} />
               <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/spot-vaccination" element={<SpotVaccination />} />
-              <Route path="/spot-vaccination/:id" element={<SpotVaccinationDetail />} />
+              <Route path="/spot-vaccination/:type" element={<SpotVaccination />} />
+              <Route path="/spot-vaccination/:id/detail" element={<SpotVaccinationDetail />} />
             </Route>
           </Routes>
         </BrowserRouter>

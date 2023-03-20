@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/v1/society', function (Request $request) {
     if ($request->token) {
-        $society = Society::firstWhere('login_tokens', $request->token);
+        $society = Society::where('login_tokens', $request->token)->with('regional')->first();
 
         if ($society !== null) {
             return response()->json([
